@@ -27,5 +27,5 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push username/my-app:latest
-          docker push username/my-app:${{ github.sha }}
+          docker push sindy0514/vocalborn-backend:latest
+          docker push sindy0514/vocalborn-backend:${{ github.sha }}
