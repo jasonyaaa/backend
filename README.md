@@ -18,3 +18,7 @@ python app.py
 ```
 pip freeze > requirements.txt
 ```
+### 如何執行docker
+```
+docker run -d -p 5001:5000 vocalborn_backend
+```
