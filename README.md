@@ -1,10 +1,11 @@
 # 後端 Backend
+Python 版本為 3.13.0
 ## 環境設定
 ### 建立虛擬環境
 ```
 python -m venv venv
 ```
-或使用 VSCode 的虛擬環境版本為 3.13.0
+或使用 VSCode 的虛擬環境
 ### 安裝套件
 ```
 pip install -r requirements.txt
