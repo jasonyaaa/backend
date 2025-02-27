@@ -25,3 +25,4 @@ docker run -d -p 5001:5000 vocalborn_backend
 ## 參考來源
 - [資料夾結構](https://ashleyalexjacob.medium.com/flask-api-folder-guide-2023-6fd56fe38c00)
 - [方便中大型專案的維護](https://wehelp.tw/topic/5106248399716352)
+- [如何命名commit message](https://wadehuanglearning.blogspot.com/2019/05/commit-commit-commit-why-what-commit.html)
