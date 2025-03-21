@@ -10,9 +10,9 @@ python -m venv venv
 ```
 pip install -r requirements.txt
 ```
-### 啟動伺服器
+### 啟動開發伺服器
 ```
-python app.py
+fastapi dev src/main.py
 ```
 ### 如何將新增的套件加入 requirements.txt
 ```
