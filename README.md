@@ -10,9 +10,9 @@ python -m venv venv
 ```
 pip install -r requirements.txt
 ```
-### 啟動伺服器
+### 啟動開發伺服器
 ```
-python app.py
+fastapi dev src/main.py
 ```
 ### 如何將新增的套件加入 requirements.txt
 ```
@@ -22,3 +22,13 @@ pip freeze > requirements.txt
 ```
 docker run -d -p 5001:5000 vocalborn_backend
 ```
+## Conventional Commits：
+- feat: 新功能
+- fix: 修復 bug
+- test: 新增或修正測試
+- refactor: 程式碼重構，不改變外部行為
+- style: 不影響程式碼含義的變化（如格式化）
+- docs: 文件相關變更
+- chore: 其他變更（如建構過程、輔助工具等）
+## 參考來源
+- [FastAPI](https://fastapi.tiangolo.com/)
