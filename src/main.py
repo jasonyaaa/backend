@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from .auth import router
+from src.auth import router as auth_router
 from src.database import Database
 db = Database()
 
@@ -13,7 +13,7 @@ async def lifespan(app: FastAPI):
   db.engine.dispose()
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(router.router)
+app.include_router(auth_router)
 
 @app.get('/')
 def root():
