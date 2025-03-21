@@ -27,3 +27,6 @@ class Database:
 
   def get_session(self):
     return self.SessionLocal()
+
+    # def get_session(self):
+    #   return sessionmaker(autocommit=False, autoflush=False, bind=self.engine)()
