@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.utils.database import Database
+from src.database import Database
 
 router = APIRouter(
   prefix='/user',
