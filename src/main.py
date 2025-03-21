@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from src.utils.database import Database
+from src.auth import router as auth_router
+from src.database import Database
 db = Database()
 
 # 系統啟動時建立資料庫連線
@@ -12,7 +13,8 @@ async def lifespan(app: FastAPI):
   db.engine.dispose()
 
 app = FastAPI(lifespan=lifespan)
+app.include_router(auth_router)
 
 @app.get('/')
-def hello_world():
+def root():
   return 'Hello, World!'
