@@ -15,6 +15,7 @@ Jinja2==3.1.6
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
 mdurl==0.1.2
+psycopg2==2.9.10
 psycopg2-binary==2.9.10
 pydantic==2.10.6
 pydantic_core==2.27.2
@@ -35,3 +36,5 @@ uvicorn==0.34.0
 uvloop==0.21.0
 watchfiles==1.0.4
 websockets==15.0.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
