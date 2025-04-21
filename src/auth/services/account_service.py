@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from sqlmodel import Session, select
 
 from src.auth.models import Account, User, EmailVerification
-from src.auth.schemas import RegisterRequest, LoginRequest, LoginResponse
+from src.auth.schemas import RegisterRequest, LoginRequest, LoginResponse, UpdateUserRequest
 from src.auth.services.jwt_service import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 from src.auth.services.password_service import get_password_hash, verify_password
 from src.auth.services.email_verification_service import generate_verification_token, send_verification_email
@@ -96,3 +96,78 @@ async def login(request: LoginRequest, session: Session) -> LoginResponse:
         access_token=access_token,
         token_type="bearer"
     )
+
+async def update_user(email: str, request: UpdateUserRequest, session: Session):
+    # 檢查使用者是否存在
+    account = session.exec(
+        select(Account).where(Account.email == email)
+    ).first()
+    if not account:
+        raise HTTPException(
+            status_code=404,
+            detail="使用者不存在"
+        )
+
+    user = session.exec(
+        select(User).where(User.account_id == account.account_id)
+    ).first()
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="使用者資料不存在"
+        )
+
+    try:
+        # 更新使用者資料
+        if request.name is not None:
+            user.name = request.name
+        if request.gender is not None:
+            user.gender = request.gender
+        if request.age is not None:
+            user.age = request.age
+        if request.phone is not None:
+            user.phone = request.phone
+
+        user.updated_at = datetime.now()
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+        return user
+
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"更新使用者資料失敗: {str(e)}"
+        )
+
+async def update_password(email: str, old_password: str, new_password: str, session: Session):
+    # 檢查使用者是否存在
+    account = session.exec(
+        select(Account).where(Account.email == email)
+    ).first()
+    if not account:
+        raise HTTPException(
+            status_code=404,
+            detail="使用者不存在"
+        )
+
+    # 驗證舊密碼
+    if not verify_password(old_password, account.password):
+        raise HTTPException(
+            status_code=401,
+            detail="舊密碼錯誤"
+        )
+
+    # 更新密碼
+    try:
+        account.password = get_password_hash(new_password)
+        session.add(account)
+        session.commit()
+        return {"message": "密碼已更新成功"}
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"更新密碼失敗: {str(e)}"
+        )
