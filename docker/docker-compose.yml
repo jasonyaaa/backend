@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # 資料庫
+  postgres:
+    image: postgres:17
+    container_name: vocalborn-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vocalborn_db
+    volumes:
+      - /home/improj/vocalborn-services/postgresql:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO 物件儲存服務
+  minio:
+    image: minio/minio:latest
+    container_name: vocalborn-minio
+    environment:
+      MINIO_ROOT_USER: minio_admin
+      MINIO_ROOT_PASSWORD: minio_admin
+    volumes:
+      - /home/improj/vocalborn-services/minio:/data
+    ports:
+      - "9000:9000"
+      - "9002:9002"
+    command: server /data --console-address ":9002"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: vocalborn-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@vocalborn.com
+      PGADMIN_DEFAULT_PASSWORD: admin_password
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+  # 後端應用服務
+  backend:
+    image: sindy0514/vocalborn-backend:latest
+    container_name: vocalborn-backend
+    environment:
+      SMTP_PASSWORD: SMTP_PASSWORD
+      DB_ADDRESS: vocalborn-postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SMTP_HOST: smtp.gmail.com
+      SMTP_USERNAME: VocalBorn
+      DB_NAME: vocalborn_db
+      SECRET_KEY: secret_key
+      SMTP_PORT: 587
+      MAIL_FROM: email
+      BASE_URL: https://api-vocalborn.r0930514.work
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
