@@ -370,6 +370,16 @@ class UpdateUserRoleRequest(BaseModel):
             }
         }
 
+class DeleteUserRequest(BaseModel):
+    password: str
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "password": "admin_password"
+            }
+        }
+
 class PermissionResponse(BaseModel):
     role: UserRole
     permissions: List[str]
