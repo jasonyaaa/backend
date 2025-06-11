@@ -107,21 +107,14 @@ async def get_therapist_profile_by_id(
     
     return profile
 
-@router.post("/assign-client", response_model=TherapistClientResponse)
+@router.post("/assign-client/{therapist_id}", response_model=TherapistClientResponse)
 async def assign_client_to_therapist(
+    therapist_id: UUID,
     assignment_data: TherapistClientCreate,
     current_user: User = Depends(require_permission(Permission.ASSIGN_CLIENTS)),
     session: Session = Depends(get_session)
 ):
     """指派客戶給治療師（管理員功能）"""
-    if current_user.role == UserRole.THERAPIST:
-        # 治療師只能指派給自己
-        therapist_id = current_user.user_id
-    else:
-        # 管理員可以指派給任何治療師
-        # 這裡需要前端傳入 therapist_id，暫時用當前用戶
-        therapist_id = current_user.user_id
-    
     therapist_service = TherapistService(session)
     assignment = therapist_service.assign_client_to_therapist(
         therapist_id,
@@ -166,18 +159,18 @@ async def get_all_therapists(
     result = []
     for therapist in therapists:
         profile = therapist_service.get_therapist_profile(therapist.user_id)
-        therapist_data = UserWithProfileResponse(
-            user_id=therapist.user_id,
-            account_id=therapist.account_id,
-            name=therapist.name,
-            gender=therapist.gender,
-            age=therapist.age,
-            phone=therapist.phone,
-            role=therapist.role,
-            created_at=therapist.created_at,
-            updated_at=therapist.updated_at,
-            therapist_profile=profile
-        )
+        therapist_data = {
+            "user_id": therapist.user_id,
+            "account_id": therapist.account_id,
+            "name": therapist.name,
+            "gender": therapist.gender,
+            "age": therapist.age,
+            "phone": therapist.phone,
+            "role": therapist.role,
+            "created_at": therapist.created_at,
+            "updated_at": therapist.updated_at,
+            "therapist_profile": profile
+        }
         result.append(therapist_data)
     
     return result
