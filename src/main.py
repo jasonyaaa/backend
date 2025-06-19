@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.auth.router import router as auth_router
 from src.auth.admin_router import router as admin_router
-from src.auth.therapist_router import router as therapist_router
+from src.therapist.router import router as therapist_router
 from src.course.router import router as course_router
 
 # 系統啟動時建立資料庫連線

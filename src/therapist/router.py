@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from src.auth.models import User, UserRole
-from src.auth.schemas import (
+from src.therapist.schemas import (
     TherapistProfileCreate,
     TherapistProfileUpdate,
     TherapistProfileResponse,
@@ -14,7 +14,7 @@ from src.auth.schemas import (
     TherapistClientResponse,
     UserWithProfileResponse
 )
-from src.auth.services.therapist_service import TherapistService
+from src.therapist.services.therapist_service import TherapistService
 from src.auth.services.permission_service import get_current_user, require_permission, Permission
 from src.shared.database.database import get_session
 

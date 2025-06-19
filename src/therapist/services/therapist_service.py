@@ -5,8 +5,9 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from src.auth.models import User, UserRole, TherapistProfile, TherapistClient
-from src.auth.schemas import (
+from src.auth.models import User, UserRole
+from src.therapist.models import TherapistProfile, TherapistClient
+from src.therapist.schemas import (
     TherapistProfileCreate, 
     TherapistProfileUpdate, 
     TherapistProfileResponse,
