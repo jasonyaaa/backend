@@ -19,21 +19,13 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # 如果角色欄位不存在，則新增它
-    try:
-        op.add_column('users', sa.Column('role', sa.String(), nullable=True))
-        op.execute("UPDATE users SET role = 'client' WHERE role IS NULL")
-        op.alter_column('users', 'role', nullable=False)
+    # op.add_column('users', sa.Column('role', sa.String(), nullable=True)) 
+    op.execute("UPDATE users SET role = 'CLIENT' WHERE role IS NULL")
+    op.alter_column('users', 'role', nullable=False)
 
-    except Exception:
-        # 如果欄位已存在，則跳過
-        pass
 
 
 def downgrade() -> None:
     # 移除角色欄位
-    try:
-        op.drop_column('users', 'role')
-    except Exception:
-        # 如果欄位不存在，則跳過
-        pass
+    op.drop_column('users', 'role')
+    
