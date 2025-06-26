@@ -22,6 +22,18 @@ app = FastAPI(
     contact={
         "name": "VocalBorn 開發團隊",
     },
+    description="照上面你的網址去選要哪個Server",
+    servers=[
+        {
+            "url": "https://api-vocalborn.r0930514.work",
+        }, 
+        {
+            "url": "http://localhost:8000",
+        },
+        {
+            "url": "https://vocalborn.r0930514.work/api",
+        }
+    ],
     lifespan=lifespan
 )
 app.include_router(auth_router)
