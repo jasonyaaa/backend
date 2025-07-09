@@ -18,7 +18,7 @@ from src.verification.schemas import ApplicationRejectRequest
 # Constants
 # =================================================================================================
 
-VERIFICATION_BUCKET_NAME = os.getenv("VERIFICATION_BUCKET_NAME", "verification-documents")
+VERIFICATION_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME", "verification-documents")
 
 # =================================================================================================
 # Application Logic
