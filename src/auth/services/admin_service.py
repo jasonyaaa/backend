@@ -226,6 +226,12 @@ async def delete_user(user_id: str, admin_password: str, admin_user: User, sessi
         session.flush()
 
         # 保存用戶信息以便返回
+        # 獲取 email
+        account_to_delete = session.exec(
+            select(Account).where(Account.account_id == user.account_id)
+        ).first()
+        email_to_return = account_to_delete.email if account_to_delete else None
+
         user_response = UserResponse(
             user_id=user.user_id,
             account_id=user.account_id,
@@ -233,6 +239,7 @@ async def delete_user(user_id: str, admin_password: str, admin_user: User, sessi
             gender=user.gender,
             age=user.age,
             phone=user.phone,
+            email=email_to_return,  # 新增 email 欄位
             role=user.role,
             created_at=user.created_at,
             updated_at=user.updated_at
