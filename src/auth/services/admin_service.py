@@ -2,10 +2,13 @@ from typing import List, Optional
 from fastapi import HTTPException
 from sqlmodel import Session, select
 from datetime import datetime
+from uuid import UUID
 
 from src.auth.models import UserRole, Account, User
 from src.auth.schemas import UserResponse
 from src.auth.services.password_service import verify_password
+from src.therapist.services import therapist_service
+from src.therapist.schemas import TherapistClientResponse
 
 async def get_all_users(session: Session) -> List[UserResponse]:
     """取得所有用戶列表"""
@@ -266,4 +269,66 @@ async def delete_user(user_id: str, admin_password: str, admin_user: User, sessi
         raise HTTPException(
             status_code=500,
             detail=f"刪除用戶失敗: {str(e)}"
+        )
+
+async def get_therapist_clients_by_id(therapist_id: UUID, session: Session) -> List[TherapistClientResponse]:
+    """管理員取得指定治療師的客戶列表"""
+    try:
+        # 驗證治療師是否存在
+        therapist = session.exec(
+            select(User).where(User.user_id == therapist_id)
+        ).first()
+        
+        if not therapist:
+            raise HTTPException(
+                status_code=404,
+                detail="治療師不存在"
+            )
+        
+        # 驗證該用戶是否為治療師
+        if therapist.role != UserRole.THERAPIST:
+            raise HTTPException(
+                status_code=400,
+                detail="指定的用戶不是治療師"
+            )
+        
+        # 獲取治療師的客戶關係列表
+        therapist_clients = therapist_service.get_therapist_clients(session, therapist_id)
+        
+        # 組合客戶詳細資訊
+        result = []
+        for tc in therapist_clients:
+            # 查詢客戶資訊
+            client = session.exec(
+                select(User).where(User.user_id == tc.client_id)
+            ).first()
+            
+            client_info = None
+            if client:
+                client_info = {
+                    "name": client.name,
+                    "gender": client.gender,
+                    "age": client.age,
+                    "phone": client.phone,
+                    "role": client.role
+                }
+            
+            # 創建 TherapistClientResponse
+            response = TherapistClientResponse(
+                id=tc.id,
+                therapist_id=tc.therapist_id,
+                client_id=tc.client_id,
+                created_at=tc.created_at,
+                client_info=client_info
+            )
+            result.append(response)
+        
+        return result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"取得治療師客戶列表失敗: {str(e)}"
         )
