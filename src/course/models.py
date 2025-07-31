@@ -38,6 +38,7 @@ class Chapter(SQLModel, table=True):
     # Relationships
     situation: Situation = Relationship(back_populates="chapters")
     sentences: List["Sentence"] = Relationship(back_populates="chapter")
+    practice_sessions: List["PracticeSession"] = Relationship(back_populates="chapter")
 
 class Sentence(SQLModel, table=True):
     """語句表"""
@@ -58,33 +59,3 @@ class Sentence(SQLModel, table=True):
     chapter: Chapter = Relationship(back_populates="sentences")
     practice_records: List["PracticeRecord"] = Relationship(back_populates="sentence")
 
-class PracticeRecord(SQLModel, table=True):
-    """練習記錄表"""
-    __tablename__ = "practice_records"
-
-    practice_record_id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
-    user_id: uuid.UUID = Field(foreign_key="users.user_id")
-    sentence_id: uuid.UUID = Field(foreign_key="sentences.sentence_id")
-    audio_path: Optional[str] = None
-    created_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
-
-    # Relationships
-    user: "User" = Relationship(back_populates="practice_records")
-    sentence: Sentence = Relationship(back_populates="practice_records")
-    # feedback: Optional["PracticeFeedback"] = Relationship(back_populates="practice_record")
-
-# class PracticeFeedback(SQLModel, table=True):
-#     """練習回饋表"""
-#     __tablename__ = "practice_feedbacks"
-
-#     feedback_id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
-#     practice_record_id: uuid.UUID = Field(foreign_key="practice_records.practice_record_id", unique=True)
-#     therapist_id: uuid.UUID = Field(foreign_key="users.user_id")
-#     content: str
-#     pronunciation_accuracy: Optional[float] = None
-#     created_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
-#     updated_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
-
-#     # Relationships
-#     practice_record: PracticeRecord = Relationship(back_populates="feedback")
-#     therapist: "src.auth.models.User" = Relationship(sa_relationship_kwargs={"foreign_keys": [therapist_id]})

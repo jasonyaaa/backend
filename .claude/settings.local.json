@@ -7,7 +7,10 @@
       "Bash(source:*)",
       "Bash(rm:*)",
       "Bash(git add:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "Bash(uv run:*)"
     ],
     "deny": []
   }

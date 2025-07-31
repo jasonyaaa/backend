@@ -5,8 +5,8 @@
 
 import uuid
 import logging
-from datetime import timedelta
-from typing import Optional
+from datetime import datetime, timedelta
+from typing import Optional, Tuple
 from fastapi import UploadFile, HTTPException, status
 from sqlmodel import Session
 
@@ -25,7 +25,7 @@ class PracticeRecordingService:
     def upload_practice_recording(
         self,
         user_id: str,
-        sentence_id: str,
+        practice_record_id: str,
         audio_file: UploadFile,
         db_session: Session
     ) -> dict:
@@ -34,7 +34,7 @@ class PracticeRecordingService:
         
         Args:
             user_id: 用戶ID
-            sentence_id: 句子ID
+            practice_record_id: 練習記錄ID
             audio_file: 音訊檔案
             db_session: 資料庫會話
             
@@ -42,28 +42,36 @@ class PracticeRecordingService:
             包含錄音資訊的字典
         """
         try:
-            # 生成唯一的錄音ID
-            recording_id = str(uuid.uuid4())
+            # 使用練習記錄ID作為檔案標識
+            recording_id = practice_record_id
             
             # 上傳檔案
             object_name = self.storage_service.upload_practice_audio(
                 audio_file, user_id, recording_id
             )
             
-            # 這裡可以將錄音資訊存入資料庫
-            # recording_record = PracticeRecording(
-            #     id=recording_id,
-            #     user_id=user_id,
-            #     sentence_id=sentence_id,
-            #     file_object_name=object_name,
-            #     file_size=audio_file.size,
-            #     duration=None,  # 可以透過音訊處理庫取得
-            #     created_at=datetime.utcnow()
-            # )
-            # db_session.add(recording_record)
-            # db_session.commit()
+            # 將錄音資訊存入資料庫
+            from src.practice.models import PracticeRecord
+            from datetime import datetime
+            import uuid as uuid_module
             
-            logger.info(f"練習錄音上傳成功: 用戶 {user_id}, 句子 {sentence_id}, 檔案 {object_name}")
+            # 更新現有的練習記錄
+            practice_record = db_session.get(PracticeRecord, uuid_module.UUID(practice_record_id))
+            if practice_record:
+                # 更新現有記錄
+                practice_record.audio_path = object_name
+                practice_record.file_size = audio_file.size
+                practice_record.content_type = audio_file.content_type
+                practice_record.updated_at = datetime.now()
+                
+                db_session.add(practice_record)
+                db_session.commit()
+            else:
+                # 這種情況不應該發生，因為應該先建立練習記錄
+                logger.error(f"練習記錄不存在: {practice_record_id}")
+                raise StorageServiceError(f"練習記錄不存在: {practice_record_id}")
+            
+            logger.info(f"練習錄音上傳成功: 用戶 {user_id}, 練習記錄 {practice_record_id}, 檔案 {object_name}")
             
             return {
                 "recording_id": recording_id,
@@ -159,6 +167,40 @@ class PracticeRecordingService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"刪除練習錄音失敗: {str(e)}"
+            )
+    
+    async def get_presigned_url(
+        self,
+        audio_path: str,
+        expires_minutes: int = 30
+    ) -> Tuple[str, datetime]:
+        """
+        取得音訊檔案的預簽署 URL
+        
+        Args:
+            audio_path: 音訊檔案路徑
+            expires_minutes: URL有效期（分鐘）
+            
+        Returns:
+            包含 URL 和過期時間的 tuple
+        """
+        try:
+            # 生成預簽署URL
+            url = self.storage_service.get_presigned_url(
+                audio_path,
+                expires_in=timedelta(minutes=expires_minutes)
+            )
+            
+            # 計算過期時間
+            expires_at = datetime.now() + timedelta(minutes=expires_minutes)
+            
+            return url, expires_at
+            
+        except StorageServiceError as e:
+            logger.error(f"取得音訊預簽署URL失敗: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"取得音訊預簽署URL失敗: {str(e)}"
             )
 
 

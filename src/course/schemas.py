@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from uuid import UUID
@@ -221,42 +221,6 @@ class SentenceResponse(BaseModel):
         }
     )
 
-# PracticeRecord Schemas
-class PracticeRecordCreate(BaseModel):
-    sentence_id: UUID
-    audio_path: Optional[str] = None
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "sentence_id": "550e8400-e29b-41d4-a716-446655440003",
-                "audio_path": "/storage/audio/user_recording_123.mp3"
-            }
-        }
-    )
-
-class PracticeRecordResponse(BaseModel):
-    practice_record_id: UUID
-    user_id: UUID
-    sentence_id: UUID
-    begin_time: datetime
-    end_time: Optional[datetime]
-    audio_path: Optional[str]
-    created_at: datetime
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "practice_record_id": "550e8400-e29b-41d4-a716-446655440004",
-                "user_id": "550e8400-e29b-41d4-a716-446655440005",
-                "sentence_id": "550e8400-e29b-41d4-a716-446655440003",
-                "begin_time": "2025-05-01T06:10:00.000000",
-                "end_time": "2025-05-01T06:10:30.000000",
-                "audio_path": "/storage/audio/user_recording_123.mp3",
-                "created_at": "2025-05-01T06:10:30.000000"
-            }
-        }
-    )
 
 # List Response Schemas
 class SituationListResponse(BaseModel):
@@ -327,24 +291,3 @@ class SentenceListResponse(BaseModel):
         }
     )
 
-class PracticeRecordListResponse(BaseModel):
-    total: int
-    practice_records: List[PracticeRecordResponse]
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "total": 1,
-                "practice_records": [{
-                    "practice_record_id": "550e8400-e29b-41d4-a716-446655440004",
-                    "user_id": "550e8400-e29b-41d4-a716-446655440005",
-                    "sentence_id": "550e8400-e29b-41d4-a716-446655440003",
-                    "score": 85.5,
-                    "begin_time": "2025-05-01T06:10:00.000000",
-                    "end_time": "2025-05-01T06:10:30.000000",
-                    "audio_path": "/storage/audio/user_recording_123.mp3",
-                    "created_at": "2025-05-01T06:10:30.000000"
-                }]
-            }
-        }
-    )
