@@ -19,6 +19,7 @@ from src.pairing.router import router as pairing_router
 from src.verification.router import router as verification_router
 from src.chat.router import router as chat_router
 #建立一個chat router 並且重新 import as 別的名稱，不要混在一起
+from src.tasks.routers.management_router import management_router
 
 # 系統啟動時建立資料庫連線
 @asynccontextmanager
@@ -61,6 +62,7 @@ app.include_router(therapist_practice_router)
 app.include_router(pairing_router)
 app.include_router(verification_router)
 app.include_router(chat_router)
+app.include_router(management_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # 允許所有來源
