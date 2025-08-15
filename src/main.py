@@ -19,7 +19,7 @@ from src.pairing.router import router as pairing_router
 from src.verification.router import router as verification_router
 from src.chat.router import router as chat_router
 #建立一個chat router 並且重新 import as 別的名稱，不要混在一起
-from src.tasks.routers.management_router import management_router
+from src.ai_analysis.routers.management_router import management_router
 
 # 系統啟動時建立資料庫連線
 @asynccontextmanager
