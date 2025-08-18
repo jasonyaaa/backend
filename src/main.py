@@ -21,9 +21,17 @@ from src.chat.router import router as chat_router
 #建立一個chat router 並且重新 import as 別的名稱，不要混在一起
 from src.ai_analysis.routers.management_router import management_router
 
-# 系統啟動時建立資料庫連線
+# 系統啟動時進行健康檢查並建立資料庫連線
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # 系統啟動時執行健康檢查
+    from src.shared.services.health_check import startup_health_check
+    try:
+        await startup_health_check()
+    except Exception as e:
+        logging.critical(f"系統啟動健康檢查失敗，應用程式終止: {e}")
+        raise
+    
     yield
 
 
@@ -75,3 +83,9 @@ app.add_middleware(
 @app.get('/')
 def root():
     return 'Hello, World!'
+
+@app.get('/health')
+async def health_check():
+    """健康檢查端點，用於監控服務狀態"""
+    from src.shared.services.health_check import check_all_services
+    return await check_all_services()
