@@ -31,8 +31,11 @@ from src.practice.models import *
 from src.therapist.models import TherapistProfile, TherapistClient
 from src.pairing.models import PairingToken
 from src.verification.models import TherapistApplication, UploadedDocument
-from src.chat.models import ChatMessage
+<<<<<<< HEAD
 from src.ai_analysis.models import AIAnalysisTask, AIAnalysisResult, TaskStatus
+=======
+from src.chat.models import ChatMessage
+>>>>>>> 7f01835 (feat: implement chat module with message sending and retrieval functionality)
 
 # 設置命名約定
 convention = {
@@ -67,10 +70,21 @@ if config.config_file_name is not None:
 
 
 def get_url():
+<<<<<<< HEAD
     """Get the database URL from configuration system."""
     # Ensure the database URL is correctly fetched from environment variables
     settings = get_settings()
     result = settings.database_url
+=======
+    """Get the database URL from environment variables."""
+    # Ensure the database URL is correctly fetched from environment variables
+    DB_ADDRESS = os.getenv("DB_ADDRESS")
+    DB_PORT: str = os.getenv("DB_PORT")
+    DB_USER = os.getenv("DB_USER")
+    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    DB_NAME = os.getenv("DB_NAME")
+    result = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_ADDRESS}:{DB_PORT}/{DB_NAME}"
+>>>>>>> 7f01835 (feat: implement chat module with message sending and retrieval functionality)
     print(f"Using database URL: {result}")
     return result
 
