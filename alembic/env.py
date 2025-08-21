@@ -27,6 +27,7 @@ from src.practice.models import *
 from src.therapist.models import TherapistProfile, TherapistClient
 from src.pairing.models import PairingToken
 from src.verification.models import TherapistApplication, UploadedDocument
+from src.chat.models import ChatMessage
 
 # 設置命名約定
 convention = {
@@ -62,6 +63,7 @@ if config.config_file_name is not None:
 
 def get_url():
     """Get the database URL from environment variables."""
+    # Ensure the database URL is correctly fetched from environment variables
     DB_ADDRESS = os.getenv("DB_ADDRESS")
     DB_PORT: str = os.getenv("DB_PORT")
     DB_USER = os.getenv("DB_USER")

@@ -17,6 +17,8 @@ from src.practice.routers.chapters_router import router as practice_chapters_rou
 from src.practice.routers.therapist_router import router as therapist_practice_router
 from src.pairing.router import router as pairing_router
 from src.verification.router import router as verification_router
+from src.chat.router import router as chat_router
+#建立一個chat router 並且重新 import as 別的名稱，不要混在一起
 
 # 系統啟動時建立資料庫連線
 @asynccontextmanager
@@ -58,13 +60,15 @@ app.include_router(practice_chapters_router)
 app.include_router(therapist_practice_router)
 app.include_router(pairing_router)
 app.include_router(verification_router)
+app.include_router(chat_router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["*"],  # 允許所有來源
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get('/')
 def root():
